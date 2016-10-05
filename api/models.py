@@ -14,3 +14,20 @@ class User(UserenaBaseProfile):
                                 unique=True,
                                 verbose_name=_('user'),
                                 related_name='my_profile')
+
+
+
+class Queue(models.Model):
+    # Add privacy field
+    owner = models.ForeignKey(User)
+
+class MediaService(models.Model):
+    name = models.CharField(max_length=30)
+
+class Media(models.Model):
+    url = models.URLField()
+    created = models.DateTimeField(auto_now_add=True)
+
+    media_service = models.ForeignKey(MediaService)
+    queue = models.ForeignKey(Queue)
+
