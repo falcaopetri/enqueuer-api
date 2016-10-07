@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'guardian',
     'easy_thumbnails',
     'friendship',
+    'rest_framework',
     'api',
 ]
 
