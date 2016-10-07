@@ -16,8 +16,17 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 
+from rest_framework.routers import DefaultRouter
+
+from api import views
+
+router = DefaultRouter()
+router.register(r'user', views.UserViewSet)
+router.register(r'queue', views.QueueViewSet)
+router.register(r'media', views.MediaViewSet)
+
 urlpatterns = [
+    url(r'^', include(router.urls)),
     url(r'^admin/', admin.site.urls),
-    url(r'^api/', include('api.urls')),
     url(r'^accounts/', include('userena.urls')),
 ]

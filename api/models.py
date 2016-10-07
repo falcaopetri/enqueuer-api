@@ -29,5 +29,5 @@ class Media(models.Model):
     created = models.DateTimeField(auto_now_add=True)
 
     media_service = models.ForeignKey(MediaService)
-    queue = models.ForeignKey(Queue)
+    queue = models.ForeignKey(Queue, related_name='medias')
 
