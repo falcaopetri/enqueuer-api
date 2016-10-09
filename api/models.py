@@ -18,8 +18,8 @@ class User(UserenaBaseProfile):
 
 
 class Queue(models.Model):
-    # Add privacy field
-    owner = models.ForeignKey(User)
+    # TODO Add privacy field
+    owner = models.ForeignKey(User, related_name='queues')
 
 class MediaService(models.Model):
     name = models.CharField(max_length=30)
