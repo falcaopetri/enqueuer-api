@@ -1,0 +1,12 @@
+dj-database-url==0.4.1
+Django==1.10.2
+django-friendship==1.5.0
+django-guardian==1.4.6
+django-userena==2.0.1
+djangorestframework==3.4.7
+easy-thumbnails==2.3
+gunicorn==19.6.0
+html2text==2014.12.29
+Pillow==3.4.1
+six==1.10.0
+whitenoise==3.2.2
