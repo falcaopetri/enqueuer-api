@@ -94,12 +94,25 @@ DATABASES = {
     }
 }
 
-# Update database configuration with $DATABASE_URL.
-# Source: https://devcenter.heroku.com/articles/django-app-configuration#database-configuration
-import dj_database_url
-db_from_env = dj_database_url.config(conn_max_age=500)
-DATABASES['default'].update(db_from_env)
-
+# The set-up uses the 'TRAVIS' (== True) environment variable on Travis
+# to detect the session, and changes the default database accordingly.
+# If 'TRAVIS' is not set, updates database configuration with $DATABASE_URL.
+# Source:
+# 	-$DATABASE_URL: https://devcenter.heroku.com/articles/django-app-configuration#database-configuration
+# 	-TRAVIS: https://gist.github.com/ndarville/3625246
+if 'TRAVIS' in os.environ:
+    DATABASES['default'] = {
+            'ENGINE':   'django.db.backends.postgresql_psycopg2',
+            'NAME':     'travisci',
+            'USER':     'postgres',
+            'PASSWORD': '',
+            'HOST':     'localhost',
+            'PORT':     '',
+        }
+else:
+	import dj_database_url
+	db_from_env = dj_database_url.config(conn_max_age=500)
+	DATABASES['default'].update(db_from_env)
 
 # Honor the 'X-Forwarded-Proto' header for request.is_secure()
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
