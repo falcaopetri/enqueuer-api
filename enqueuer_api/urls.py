@@ -21,12 +21,14 @@ from rest_framework.routers import DefaultRouter
 from api import views
 
 router = DefaultRouter()
-router.register(r'user', views.UserViewSet)
-router.register(r'queue', views.QueueViewSet)
-router.register(r'media', views.MediaViewSet)
+#router.register(r'users', views.UserDetail)
+router.register(r'queues', views.QueueViewSet)
+router.register(r'medias', views.MediaViewSet)
 
 urlpatterns = [
     url(r'^', include(router.urls)),
+    url(r'^users/(?P<pk>[0-9]+)/$', views.UserDetail.as_view(), name='user-detail'),
+    url(r'^auth/', include('rest_framework.urls')),
     url(r'^admin/', admin.site.urls),
     url(r'^accounts/', include('userena.urls')),
 ]

@@ -10,24 +10,17 @@ class DjangoUserSerializer(serializers.ModelSerializer):
         model = DjangoUser
         fields = ('username')
 
-class QueueSerializer(serializers.ModelSerializer):
-    owner = serializers.ReadOnlyField(source='owner.user.username')
-    #medias = serializers.PrimaryKeyRelatedField(many=True, queryset=Media.objects.all())
- 
+class QueueSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Queue
-        fields = ('owner', 'medias', )
+        fields = ('url', 'pk', 'owner', 'medias', )
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     user = serializers.ReadOnlyField(source='user.username')
-    # TODO add queues field
-    # queues = serializers.HyperlinkedRelatedField(queryset=Queue.objects.all(), view_name='queues-detail', many=True)
-    # queues = QueueSerializer
 
     class Meta:
         model = User
-        # TODO add queues field
-        fields = ('id', 'user')
+        fields = ('url', 'pk', 'user', 'queues')
 
 class MediaSerializer(serializers.ModelSerializer):
     class Meta:
