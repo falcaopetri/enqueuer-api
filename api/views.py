@@ -43,7 +43,9 @@ class QueueViewSet(viewsets.ModelViewSet):
         return owner.queues.all()
 
     def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
+        user = self.request.user
+        owner = get_user_profile(user)
+        serializer.save(owner=owner)
 
 
 class MediaViewSet(viewsets.ModelViewSet):
