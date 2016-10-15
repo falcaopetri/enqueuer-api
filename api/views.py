@@ -21,6 +21,8 @@ def api_root(request, format=None):
 class UserDetail(generics.RetrieveAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    lookup_field = 'user__username'
+    lookup_url_kwarg = 'username'
 
 
 class QueueViewSet(viewsets.ModelViewSet):

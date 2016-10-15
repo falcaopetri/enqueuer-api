@@ -27,7 +27,7 @@ router.register(r'medias', views.MediaViewSet)
 
 urlpatterns = [
     url(r'^', include(router.urls)),
-    url(r'^users/(?P<pk>[0-9]+)/$', views.UserDetail.as_view(), name='user-detail'),
+    url(r'^users/(?P<username>.+)/$', views.UserDetail.as_view(), name='user-detail'),
     url(r'^auth/', include('rest_framework.urls')),
     url(r'^admin/', admin.site.urls),
     url(r'^accounts/', include('userena.urls')),
