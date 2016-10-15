@@ -15,6 +15,12 @@ class User(UserenaBaseProfile):
                                 verbose_name=_('user'),
                                 related_name='my_profile')
 
+    @property
+    def username(self): 
+        """
+            Source: http://stackoverflow.com/a/37223506
+        """
+        return self.user.username
 
 
 class Queue(models.Model):
