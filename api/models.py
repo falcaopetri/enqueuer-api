@@ -27,8 +27,12 @@ class Queue(models.Model):
     # TODO Add privacy field
     owner = models.ForeignKey(User, related_name='queues')
 
+
 class MediaService(models.Model):
     name = models.CharField(max_length=30)
+
+    def __str__(self):
+        return self.name
 
 class Media(models.Model):
     url = models.URLField()
