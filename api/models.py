@@ -2,7 +2,9 @@ from django.db import models
 
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext as _
+
 from userena.models import UserenaBaseProfile
+from taggit.managers import TaggableManager
 
 # TODO: Let the user have the ability to choose their default language in their profile
 # Check http://django-userena.readthedocs.io/en/latest/installation.html#profiles
@@ -42,11 +44,13 @@ class Queue(models.Model):
     def __str__(self):
         return self.owner.username + '\'s ' + self.name
 
+
 class MediaService(models.Model):
     name = models.CharField(max_length=30)
 
     def __str__(self):
         return self.name
+
 
 class Media(models.Model):
     description = models.CharField(max_length=100, default='')
@@ -56,6 +60,7 @@ class Media(models.Model):
 
     media_service = models.ForeignKey(MediaService, null=True)
     queue = models.ForeignKey(Queue, related_name='medias')
+    tags = TaggableManager()
 
     @property
     def user(self):
@@ -66,4 +71,3 @@ class Media(models.Model):
         if self.media_service is None:  # Set default reference
             self.media_service = MediaService.objects.get(id=1)
         super().save(*args, **kwargs)
-

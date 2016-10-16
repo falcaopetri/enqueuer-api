@@ -7,6 +7,8 @@ from userena.utils import get_user_profile
 
 from friendship.models import Friend
 
+from taggit_serializer.serializers import TagListSerializerField, TaggitSerializer
+
 from api.models import User, Queue, Media, MediaService
 from api.permissions import IsQueueOwner, IsFriendsQueue
 from api.utils import get_users_profiles, are_friends
@@ -88,10 +90,12 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         model = User
         fields = ('url', 'username', 'queues')
 
+
 class MediaSerializer(FilterRelatedMixin, serializers.HyperlinkedModelSerializer):
     queue = serializers.HyperlinkedRelatedField(view_name='queue-detail', queryset=Queue.objects.all())
     media_service = serializers.SlugRelatedField(slug_field='name', queryset=MediaService.objects.all())
     created_by = serializers.HyperlinkedRelatedField(view_name='user-detail', read_only=True, lookup_field='username')
+    tags = TagListSerializerField()
 
     def filter_queue(self, queryset):
         # TODO this code is equal to UserSerializer.get_queues() -> create a get_user()
@@ -109,7 +113,27 @@ class MediaSerializer(FilterRelatedMixin, serializers.HyperlinkedModelSerializer
 
     class Meta:
         model = Media
-        fields = ('url', 'created_at', 'created_by', 'queue', 'media_service')
+        fields = ('url', 'created_at', 'created_by', 'queue', 'media_service', 'tags')
+
+    def create(self, validated_data):
+        """
+            Allows tags saving as suggested on http://stackoverflow.com/a/23056025
+        """
+        tags = validated_data.pop('tags')
+        instance = super().create(validated_data)
+        instance.tags.set(*tags)
+        instance.save()
+        return instance
+
+    def update(self, instance, validated_data):
+        """
+            Allows tags saving as suggested on http://stackoverflow.com/a/23056025
+        """
+        tags = validated_data.pop('tags')
+        instance.tags.set(*tags)
+        instance.save()
+        return instance
+
 
 class MediaServiceSerializer(serializers.ModelSerializer):
     class Meta:
