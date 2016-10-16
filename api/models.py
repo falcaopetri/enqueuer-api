@@ -24,9 +24,23 @@ class User(UserenaBaseProfile):
 
 
 class Queue(models.Model):
-    # TODO Add privacy field
-    owner = models.ForeignKey(User, related_name='queues')
+    PRIVATE = 'private'
+    PUBLIC = 'public'
+    PRIVACY_CHOICES = (
+        (PRIVATE, 'Private'),
+        (PUBLIC, 'Public'),
+    )
 
+    owner = models.ForeignKey(User, related_name='queues')
+    name = models.CharField(max_length=30)
+    privacy = models.CharField(
+        max_length=20,
+        choices=PRIVACY_CHOICES,
+        default=PRIVATE
+    )
+
+    def __str__(self):
+        return self.owner.username + '\'s ' + self.name
 
 class MediaService(models.Model):
     name = models.CharField(max_length=30)
@@ -38,6 +52,12 @@ class Media(models.Model):
     url = models.URLField()
     created = models.DateTimeField(auto_now_add=True)
 
-    media_service = models.ForeignKey(MediaService)
+    media_service = models.ForeignKey(MediaService, null=True)
     queue = models.ForeignKey(Queue, related_name='medias')
+
+    def save(self, *args, **kwargs):
+        # TODO: auto detect media_service
+        if self.media_service is None:  # Set default reference
+            self.media_service = MediaService.objects.get(id=1)
+        super.save(*args, **kwargs)
 

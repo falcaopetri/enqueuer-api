@@ -11,7 +11,7 @@ class QueueSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Queue
-        fields = ('url', 'owner', 'medias', )
+        fields = ('url', 'owner', 'name', 'medias', 'privacy')
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     username = serializers.ReadOnlyField(source='user.username')
@@ -20,7 +20,11 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         model = User
         fields = ('username', 'queues')
 
-class MediaSerializer(serializers.ModelSerializer):
+class MediaSerializer(serializers.HyperlinkedModelSerializer):
+    # TODO: filter user's queues
+    queue = serializers.HyperlinkedRelatedField(view_name='queue-detail', queryset=Queue.objects.all())
+    media_service = serializers.SlugRelatedField(slug_field='name', queryset=MediaService.objects.all())
+
     class Meta:
         model = Media
         fields = ('url', 'created', 'queue', 'media_service')
