@@ -24,6 +24,7 @@ router = DefaultRouter()
 #router.register(r'users', views.UserDetail)
 router.register(r'queues', views.QueueViewSet)
 router.register(r'medias', views.MediaViewSet)
+router.register(r'friends', views.FriendViewSet)
 
 urlpatterns = [
     url(r'^', include(router.urls)),
@@ -31,4 +32,5 @@ urlpatterns = [
     url(r'^auth/', include('rest_framework.urls')),
     url(r'^admin/', admin.site.urls),
     url(r'^accounts/', include('userena.urls')),
+#    url(r'^friendship/', include('friendship.urls')),
 ]

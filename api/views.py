@@ -7,16 +7,12 @@ from rest_framework.permissions import IsAuthenticated
 
 from userena.utils import get_user_profile
 
+from friendship.models import Friend
+
 from api.models import User, Queue, Media
 from api.serializers import UserSerializer, QueueSerializer, MediaSerializer
 from api.permissions import IsMediaOwner
-
-@api_view(['GET'])
-def api_root(request, format=None):
-    return Response({
-        'queues': reverse('queue-list', request=request, format=format)
-    })
-
+from api.utils import get_users_profiles
 
 class UserDetail(generics.RetrieveAPIView):
     queryset = User.objects.all()
@@ -40,6 +36,8 @@ class QueueViewSet(viewsets.ModelViewSet):
             declared on django-userena's utils.py
             (https://github.com/bread-and-pepper/django-userena/blob/master/userena/utils.py)
         """
+        # TODO: that's not the actual expected behavior
+        # We should be able to see PUBLIC queues of FRIENDS of mine
         user = self.request.user
         owner = get_user_profile(user)
         return owner.queues.all()
@@ -54,7 +52,18 @@ class MediaViewSet(viewsets.ModelViewSet):
     queryset = Media.objects.none()
     serializer_class = MediaSerializer
     permission_classes = (IsAuthenticated, IsMediaOwner)
- 
+
     def get_queryset(self):
         user = self.request.user
         return Media.objects.filter(queue__owner__user=user)
+
+
+class FriendViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.none()
+    serializer_class = UserSerializer
+    permission_classes = (IsAuthenticated, )
+
+    def get_queryset(self):
+        user = self.request.user
+        friends = Friend.objects.friends(user)
+        return get_users_profiles(friends)
