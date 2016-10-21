@@ -1,3 +1,5 @@
+from django.shortcuts import get_object_or_404
+
 from rest_framework import viewsets
 from rest_framework import generics
 from rest_framework.decorators import api_view
@@ -5,15 +7,19 @@ from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework.permissions import IsAuthenticated
 
+from rest_condition import Or, And
+
 from userena.utils import get_user_profile
 
 from friendship.models import Friend
 
 from api.models import User, Queue, Media
 from api.serializers import UserSerializer, QueueSerializer, MediaSerializer
-from api.permissions import IsMediaOwner
+from api.permissions import IsMediaOwner, IsQueueOwner, IsFriendsQueue, IsReadOnly
 from api.utils import get_users_profiles
 
+# TODO Configure UserViewSet
+# class UserViewSet(viewsets.ModelViewSet):
 class UserDetail(generics.RetrieveAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
@@ -24,7 +30,7 @@ class UserDetail(generics.RetrieveAPIView):
 class QueueViewSet(viewsets.ModelViewSet):
     queryset = Queue.objects.none()
     serializer_class = QueueSerializer
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticated, Or(IsQueueOwner, And(IsFriendsQueue, IsReadOnly)))
 
     def get_queryset(self):
         """
@@ -41,6 +47,11 @@ class QueueViewSet(viewsets.ModelViewSet):
         user = self.request.user
         owner = get_user_profile(user)
         return owner.queues.all()
+
+    def get_object(self):
+        obj = get_object_or_404(Queue, pk=self.kwargs.get('pk'))
+        self.check_object_permissions(self.request, obj)
+        return obj
 
     def perform_create(self, serializer):
         user = self.request.user
