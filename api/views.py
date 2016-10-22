@@ -15,7 +15,7 @@ from friendship.models import Friend
 
 from api.models import User, Queue, Media
 from api.serializers import UserSerializer, QueueSerializer, MediaSerializer
-from api.permissions import IsMediaOwner, IsQueueOwner, IsFriendsQueue, IsReadOnly
+from api.permissions import *
 from api.utils import get_users_profiles
 
 # TODO Configure UserViewSet
@@ -62,12 +62,17 @@ class QueueViewSet(viewsets.ModelViewSet):
 class MediaViewSet(viewsets.ModelViewSet):
     queryset = Media.objects.none()
     serializer_class = MediaSerializer
-    permission_classes = (IsAuthenticated, IsMediaOwner)
+    permission_classes = (IsAuthenticated, Or(IsMediaOwner, And(IsFriendsMedia, IsPublicMedia, IsReadOnly)))
 
     def get_queryset(self):
         user = self.request.user
         return Media.objects.filter(queue__owner__user=user)
 
+    def get_object(self):
+        obj = get_object_or_404(Media, pk=self.kwargs.get('pk'))
+        self.check_object_permissions(self.request, obj)
+        return obj
+        
 
 class FriendViewSet(viewsets.ModelViewSet):
     queryset = User.objects.none()
