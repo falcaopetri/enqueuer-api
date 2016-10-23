@@ -59,5 +59,5 @@ class Media(models.Model):
         # TODO: auto detect media_service
         if self.media_service is None:  # Set default reference
             self.media_service = MediaService.objects.get(id=1)
-        super.save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
