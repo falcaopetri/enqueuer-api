@@ -18,9 +18,8 @@ from api.serializers import UserSerializer, QueueSerializer, MediaSerializer
 from api.permissions import *
 from api.utils import get_users_profiles
 
-# TODO Configure UserViewSet
-# class UserViewSet(viewsets.ModelViewSet):
-class UserDetail(generics.RetrieveAPIView):
+
+class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     lookup_field = 'user__username'
