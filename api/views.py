@@ -22,6 +22,7 @@ from api.utils import get_users_profiles
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    permission_classes = (IsAuthenticated, )
     lookup_field = 'user__username'
     lookup_url_kwarg = 'username'
 
