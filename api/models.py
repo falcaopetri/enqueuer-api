@@ -50,7 +50,8 @@ class MediaService(models.Model):
 
 class Media(models.Model):
     url = models.URLField()
-    created = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    created_by = models.ForeignKey(User, null=False)
 
     media_service = models.ForeignKey(MediaService, null=True)
     queue = models.ForeignKey(Queue, related_name='medias')

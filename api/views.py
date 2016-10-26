@@ -72,6 +72,11 @@ class MediaViewSet(viewsets.ModelViewSet):
         obj = get_object_or_404(Media, pk=self.kwargs.get('pk'))
         self.check_object_permissions(self.request, obj)
         return obj
+
+    def perform_create(self, serializer):
+        user = self.request.user
+        created_by = get_user_profile(user)
+        serializer.save(created_by=created_by)
         
 
 class FriendViewSet(viewsets.ModelViewSet):

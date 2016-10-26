@@ -73,10 +73,11 @@ class MediaSerializer(serializers.HyperlinkedModelSerializer):
     # TODO: filter user's queues
     queue = serializers.HyperlinkedRelatedField(view_name='queue-detail', queryset=Queue.objects.all())
     media_service = serializers.SlugRelatedField(slug_field='name', queryset=MediaService.objects.all())
+    created_by = serializers.HyperlinkedRelatedField(view_name='user-detail', read_only=True, lookup_field='username')
 
     class Meta:
         model = Media
-        fields = ('url', 'created', 'queue', 'media_service')
+        fields = ('url', 'created_at', 'created_by', 'queue', 'media_service')
 
 class MediaServiceSerializer(serializers.ModelSerializer):
     class Meta:
