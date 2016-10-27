@@ -5,10 +5,29 @@ from rest_framework.fields import CurrentUserDefault
 
 from userena.utils import get_user_profile
 
+from friendship.models import Friend
+
 from api.models import User, Queue, Media, MediaService
 from api.permissions import IsQueueOwner, IsFriendsQueue
-from api.utils import are_friends
+from api.utils import get_users_profiles, are_friends
 
+
+class FilterRelatedMixin(object):
+    """
+    Source: https://github.com/tomchristie/django-rest-framework/issues/1985#issuecomment-61871134
+    Aim: Allow filtering/permissions on HyperlinkedRelatedField
+    """
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for name, field in self.fields.items():
+            if isinstance(field, serializers.RelatedField):
+                method_name = 'filter_%s' % name
+                try:
+                    func = getattr(self, method_name)
+                except AttributeError:
+                    pass
+                else:
+                    field.queryset = func(field.queryset)
 
 
 class DynamicFieldsModelSerializer(serializers.ModelSerializer):
@@ -69,15 +88,29 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         model = User
         fields = ('url', 'username', 'queues')
 
-class MediaSerializer(serializers.HyperlinkedModelSerializer):
+class MediaSerializer(FilterRelatedMixin, serializers.HyperlinkedModelSerializer):
     # TODO: filter user's queues
-    queue = serializers.HyperlinkedRelatedField(view_name='queue-detail', queryset=Queue.objects.all())
+    queue = serializers.HyperlinkedRelatedField(view_name='queue-detail', read_only=True)
     media_service = serializers.SlugRelatedField(slug_field='name', queryset=MediaService.objects.all())
     created_by = serializers.HyperlinkedRelatedField(view_name='user-detail', read_only=True, lookup_field='username')
+    #user = serializers.SerializerMethodField()
+    user = serializers.HyperlinkedRelatedField(view_name='user-detail', queryset=User.objects.all(), lookup_field='username')
+
+    def filter_user(self, queryset):
+        # TODO this code is equal to UserSerializer.get_queues() -> create a get_user()
+        curr_user = None
+
+        request = self.context.get("request")
+        if request and hasattr(request, "user"):
+            curr_user = request.user
+        
+        friends = Friend.objects.friends(curr_user)
+        friends.append(curr_user)
+        return queryset.filter(user__in=friends)
 
     class Meta:
         model = Media
-        fields = ('url', 'created_at', 'created_by', 'queue', 'media_service')
+        fields = ('url', 'created_at', 'created_by', 'queue', 'media_service', 'user')
 
 class MediaServiceSerializer(serializers.ModelSerializer):
     class Meta:

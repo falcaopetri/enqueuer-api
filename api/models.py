@@ -56,6 +56,10 @@ class Media(models.Model):
     media_service = models.ForeignKey(MediaService, null=True)
     queue = models.ForeignKey(Queue, related_name='medias')
 
+    @property
+    def user(self):
+        return self.queue.owner
+
     def save(self, *args, **kwargs):
         # TODO: auto detect media_service
         if self.media_service is None:  # Set default reference
