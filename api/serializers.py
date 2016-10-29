@@ -89,14 +89,11 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('url', 'username', 'queues')
 
 class MediaSerializer(FilterRelatedMixin, serializers.HyperlinkedModelSerializer):
-    # TODO: filter user's queues
-    queue = serializers.HyperlinkedRelatedField(view_name='queue-detail', read_only=True)
+    queue = serializers.HyperlinkedRelatedField(view_name='queue-detail', queryset=Queue.objects.all())
     media_service = serializers.SlugRelatedField(slug_field='name', queryset=MediaService.objects.all())
     created_by = serializers.HyperlinkedRelatedField(view_name='user-detail', read_only=True, lookup_field='username')
-    #user = serializers.SerializerMethodField()
-    user = serializers.HyperlinkedRelatedField(view_name='user-detail', queryset=User.objects.all(), lookup_field='username')
 
-    def filter_user(self, queryset):
+    def filter_queue(self, queryset):
         # TODO this code is equal to UserSerializer.get_queues() -> create a get_user()
         curr_user = None
 
@@ -105,12 +102,14 @@ class MediaSerializer(FilterRelatedMixin, serializers.HyperlinkedModelSerializer
             curr_user = request.user
         
         friends = Friend.objects.friends(curr_user)
-        friends.append(curr_user)
-        return queryset.filter(user__in=friends)
+        # TODO Change privacy check to "is_default_queue" check
+        qs = queryset.filter(owner__user__in=friends, privacy=Queue.PRIVATE)
+        qs = qs | queryset.filter(owner__user=curr_user)
+        return qs
 
     class Meta:
         model = Media
-        fields = ('url', 'created_at', 'created_by', 'queue', 'media_service', 'user')
+        fields = ('url', 'created_at', 'created_by', 'queue', 'media_service')
 
 class MediaServiceSerializer(serializers.ModelSerializer):
     class Meta:
