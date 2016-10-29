@@ -49,11 +49,17 @@ class MediaService(models.Model):
         return self.name
 
 class Media(models.Model):
+    description = models.CharField(max_length=100, default='')
     url = models.URLField()
-    created = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    created_by = models.ForeignKey(User, null=False)
 
     media_service = models.ForeignKey(MediaService, null=True)
     queue = models.ForeignKey(Queue, related_name='medias')
+
+    @property
+    def user(self):
+        return self.queue.owner
 
     def save(self, *args, **kwargs):
         # TODO: auto detect media_service
