@@ -49,6 +49,7 @@ class MediaService(models.Model):
         return self.name
 
 class Media(models.Model):
+    description = models.CharField(max_length=100, default='')
     url = models.URLField()
     created_at = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, null=False)
