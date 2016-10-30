@@ -1,4 +1,4 @@
-from django.contrib.auth.models import User as DjangoUser
+from django.contrib.auth.models import User
 
 from rest_framework import serializers
 from rest_framework.fields import CurrentUserDefault
@@ -7,7 +7,7 @@ from userena.utils import get_user_profile
 
 from friendship.models import Friend
 
-from api.models import User, Queue, Media, MediaService
+from api.models import UserProfile, Queue, Media, MediaService
 from api.permissions import IsQueueOwner, IsFriendsQueue
 from api.utils import get_users_profiles, are_friends
 
@@ -61,7 +61,7 @@ class QueueSerializer(DynamicFieldsModelSerializer, serializers.HyperlinkedModel
         fields = ('url', 'owner', 'name', 'medias', 'privacy')
 
 
-class UserSerializer(serializers.HyperlinkedModelSerializer):
+class UserProfileSerializer(serializers.HyperlinkedModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='user-detail', lookup_field='username')
     username = serializers.ReadOnlyField(source='user.username')
     queues = serializers.SerializerMethodField()
@@ -85,7 +85,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         return serializer.data
 
     class Meta:
-        model = User
+        model = UserProfile
         fields = ('url', 'username', 'queues')
 
 class MediaSerializer(FilterRelatedMixin, serializers.HyperlinkedModelSerializer):
@@ -94,7 +94,7 @@ class MediaSerializer(FilterRelatedMixin, serializers.HyperlinkedModelSerializer
     created_by = serializers.HyperlinkedRelatedField(view_name='user-detail', read_only=True, lookup_field='username')
 
     def filter_queue(self, queryset):
-        # TODO this code is equal to UserSerializer.get_queues() -> create a get_user()
+        # TODO this code is equal to UserProfileSerializer.get_queues() -> create a get_user()
         curr_user = None
 
         request = self.context.get("request")

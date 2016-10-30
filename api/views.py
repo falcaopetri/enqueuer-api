@@ -13,15 +13,15 @@ from userena.utils import get_user_profile
 
 from friendship.models import Friend
 
-from api.models import User, Queue, Media
-from api.serializers import UserSerializer, QueueSerializer, MediaSerializer
+from api.models import UserProfile, Queue, Media
+from api.serializers import UserProfileSerializer, QueueSerializer, MediaSerializer
 from api.permissions import *
 from api.utils import get_users_profiles
 
 
-class UserViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
+class UserProfileViewSet(viewsets.ModelViewSet):
+    queryset = UserProfile.objects.all()
+    serializer_class = UserProfileSerializer
     permission_classes = (IsAuthenticated, )
     lookup_field = 'user__username'
     lookup_url_kwarg = 'username'
@@ -80,8 +80,8 @@ class MediaViewSet(viewsets.ModelViewSet):
         
 
 class FriendViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.none()
-    serializer_class = UserSerializer
+    queryset = UserProfile.objects.none()
+    serializer_class = UserProfileSerializer
     permission_classes = (IsAuthenticated, )
 
     def get_queryset(self):
