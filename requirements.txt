@@ -2,6 +2,8 @@ dj-database-url==0.4.1
 Django==1.10.2
 django-friendship==1.5.0
 django-guardian==1.4.6
+django-taggit==0.21.3
+django-taggit-serializer==0.1.5
 django-userena==2.0.1
 djangorestframework==3.4.7
 easy-thumbnails==2.3
