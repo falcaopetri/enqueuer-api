@@ -51,14 +51,17 @@ class MediaService(models.Model):
     def __str__(self):
         return self.name
 
+    def get_default(self):
+        return MediaService.objects.get(id=1)
 
+# TODO: auto detect media_service
 class Media(models.Model):
     description = models.CharField(max_length=100, default='')
     url = models.URLField()
     created_at = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(UserProfile, null=False)
 
-    media_service = models.ForeignKey(MediaService, null=True)
+    media_service = models.ForeignKey(MediaService, default=MediaService.get_default)
     queue = models.ForeignKey(Queue, related_name='medias')
     tags = TaggableManager()
 
@@ -66,8 +69,3 @@ class Media(models.Model):
     def user(self):
         return self.queue.owner
 
-    def save(self, *args, **kwargs):
-        # TODO: auto detect media_service
-        if self.media_service is None:  # Set default reference
-            self.media_service = MediaService.objects.get(id=1)
-        super().save(*args, **kwargs)

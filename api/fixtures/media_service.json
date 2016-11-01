@@ -1,0 +1,9 @@
+[
+{
+    "model": "api.mediaservice",
+    "pk": 1,
+    "fields": {
+        "name": "Default"
+    }
+}
+]
