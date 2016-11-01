@@ -8,14 +8,14 @@ from taggit.managers import TaggableManager
 
 # TODO: Let the user have the ability to choose their default language in their profile
 # Check http://django-userena.readthedocs.io/en/latest/installation.html#profiles
-class User(UserenaBaseProfile):
+class UserProfile(UserenaBaseProfile):
     """
         Source: http://django-userena.readthedocs.io/en/latest/installation.html#profiles
     """
     user = models.OneToOneField(User,
                                 unique=True,
                                 verbose_name=_('user'),
-                                related_name='my_profile')
+                                related_name='profile')
 
     @property
     def username(self): 
@@ -33,7 +33,7 @@ class Queue(models.Model):
         (PUBLIC, 'Public'),
     )
 
-    owner = models.ForeignKey(User, related_name='queues')
+    owner = models.ForeignKey(UserProfile, related_name='queues')
     name = models.CharField(max_length=30)
     privacy = models.CharField(
         max_length=20,
@@ -56,7 +56,7 @@ class Media(models.Model):
     description = models.CharField(max_length=100, default='')
     url = models.URLField()
     created_at = models.DateTimeField(auto_now_add=True)
-    created_by = models.ForeignKey(User, null=False)
+    created_by = models.ForeignKey(UserProfile, null=False)
 
     media_service = models.ForeignKey(MediaService, null=True)
     queue = models.ForeignKey(Queue, related_name='medias')

@@ -149,7 +149,7 @@ AUTHENTICATION_BACKENDS = (
 )
 
 ANONYMOUS_USER_ID = -1
-AUTH_PROFILE_MODULE = 'api.User'
+AUTH_PROFILE_MODULE = 'api.UserProfile'
 
 USERENA_SIGNIN_REDIRECT_URL = '/accounts/%(username)s/'
 LOGIN_URL = '/accounts/signin/'
