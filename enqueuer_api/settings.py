@@ -47,6 +47,8 @@ INSTALLED_APPS = [
     'easy_thumbnails',
     'friendship',
     'rest_framework',
+    'taggit',
+    'taggit_serializer',
     'api',
 ]
 
