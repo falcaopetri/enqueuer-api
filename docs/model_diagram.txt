@@ -1,0 +1,60 @@
+# http://www.planttext.com/planttext
+
+
+@startuml
+
+title Enqueuer - Model Diagram
+
+
+class User {
+  
+}
+
+class Queue {
+  Privacy
+}
+
+class Media {
+  String URL
+  Date date_created
+  Tags
+}
+
+class MediaService {
+  String name
+  preview()
+}
+
+class DiscussionFeature {
+
+}
+
+class TextFieldFeature {
+  String text
+}
+
+class Group {
+
+}
+
+abstract class MediaServiceFeature {
+
+}
+
+User "1" --down- "N" User: Friends
+User "1" --down- "N" Queue
+User "1" --down- "N" Media: Created by
+Queue "0" --down- "N" Media: Composition
+MediaService "1" --left- "1" Media: Composition
+MediaService --down- MediaServiceFeature
+Media --down- MediaServiceFeature
+MediaServiceFeature <|--down- DiscussionFeature
+MediaServiceFeature <|--down- TextFieldFeature
+MediaServiceFeature <|--down- LinkUsersFeature
+User o-- LinkUsersFeature
+Group -- LinkUsersFeature
+Group --left- User
+Group --down- Queue
+
+
+@enduml
